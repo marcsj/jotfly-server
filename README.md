@@ -1,2 +1,2 @@
 # jotfly-server
-Run anywhere server for jotfly notes.
+Run anywhere server for Jotfly notes.
