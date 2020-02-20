@@ -34,18 +34,15 @@ message UpdateRequest {
     repeated string labels = 4;
 }
 
-// Request for getting a single note
 message GetNoteRequest {
     string directory = 1;
     string id = 2;
 }
 
-// Request for getting all notes under a directory
 message GetDirectoryNotesRequest {
     string directory = 1;
 }
 
-// Request for getting all directories
 message GetDirectoriesRequest {
 }
 
@@ -57,35 +54,53 @@ message GetDirectoryNotesResponse {
     repeated DirectoryNote notes = 1;
 }
 
-
+// Notes service handles the CRUD operations associated with notes
 service Notes {
+    // Get list of directories
+    //
+    // Returns a list of a user's directories.
     rpc GetDirectories (GetDirectoriesRequest) returns (GetDirectoriesResponse) {
         option (google.api.http) = {
             get: "/notes/directory"
         };
     }
+    // Get list of notes in directory
+    //
+    // Returns a list of a user's notes for a specific directory.
     rpc GetDirectoryNotes(GetDirectoryNotesRequest) returns (GetDirectoryNotesResponse) {
         option (google.api.http) = {
             get: "/notes/directory/{directory}"
         };
     }
+    // Get a single note
+    //
+    // Returns a single note in a particular directory.
     rpc GetNote (GetNoteRequest) returns (Note) {
         option (google.api.http) = {
             get: "/notes/directory/{directory}/note/{id}"
         };
     }
+    // Create a note
+    //
+    // Creates a note in a particular directory with a specified ID.
     rpc CreateNote (CreateRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             post: "/notes/directory/{directory}/note/{id}"
             body: "*"
         };
     }
+    // Update a note's contents
+    //
+    // Updates a note and returns the updated entry.
     rpc UpdateNote (UpdateRequest) returns (Note) {
         option (google.api.http) = {
             patch: "/notes/directory/{directory}/note/{id}"
             body: "*"
         };
     }
+    // Delete a note
+    //
+    // Deletes a particular note by directory and ID.
     rpc DeleteNote (DeleteRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/notes/directory/{directory}/note/{id}"
