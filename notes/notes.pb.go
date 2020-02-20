@@ -301,7 +301,6 @@ func (m *UpdateRequest) GetLabels() []string {
 	return nil
 }
 
-// Request for getting a single note
 type GetNoteRequest struct {
 	Directory            string   `protobuf:"bytes,1,opt,name=directory,proto3" json:"directory,omitempty"`
 	Id                   string   `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -349,7 +348,6 @@ func (m *GetNoteRequest) GetId() string {
 	return ""
 }
 
-// Request for getting all notes under a directory
 type GetDirectoryNotesRequest struct {
 	Directory            string   `protobuf:"bytes,1,opt,name=directory,proto3" json:"directory,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -389,7 +387,6 @@ func (m *GetDirectoryNotesRequest) GetDirectory() string {
 	return ""
 }
 
-// Request for getting all directories
 type GetDirectoriesRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -561,11 +558,29 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type NotesClient interface {
+	// Get list of directories
+	//
+	// Returns a list of a user's directories.
 	GetDirectories(ctx context.Context, in *GetDirectoriesRequest, opts ...grpc.CallOption) (*GetDirectoriesResponse, error)
+	// Get list of notes in directory
+	//
+	// Returns a list of a user's notes for a specific directory.
 	GetDirectoryNotes(ctx context.Context, in *GetDirectoryNotesRequest, opts ...grpc.CallOption) (*GetDirectoryNotesResponse, error)
+	// Get a single note
+	//
+	// Returns a single note in a particular directory.
 	GetNote(ctx context.Context, in *GetNoteRequest, opts ...grpc.CallOption) (*Note, error)
+	// Create a note
+	//
+	// Creates a note in a particular directory with a specified ID.
 	CreateNote(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	// Update a note's contents
+	//
+	// Updates a note and returns the updated entry.
 	UpdateNote(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*Note, error)
+	// Delete a note
+	//
+	// Deletes a particular note by directory and ID.
 	DeleteNote(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
@@ -633,11 +648,29 @@ func (c *notesClient) DeleteNote(ctx context.Context, in *DeleteRequest, opts ..
 
 // NotesServer is the server API for Notes service.
 type NotesServer interface {
+	// Get list of directories
+	//
+	// Returns a list of a user's directories.
 	GetDirectories(context.Context, *GetDirectoriesRequest) (*GetDirectoriesResponse, error)
+	// Get list of notes in directory
+	//
+	// Returns a list of a user's notes for a specific directory.
 	GetDirectoryNotes(context.Context, *GetDirectoryNotesRequest) (*GetDirectoryNotesResponse, error)
+	// Get a single note
+	//
+	// Returns a single note in a particular directory.
 	GetNote(context.Context, *GetNoteRequest) (*Note, error)
+	// Create a note
+	//
+	// Creates a note in a particular directory with a specified ID.
 	CreateNote(context.Context, *CreateRequest) (*empty.Empty, error)
+	// Update a note's contents
+	//
+	// Updates a note and returns the updated entry.
 	UpdateNote(context.Context, *UpdateRequest) (*Note, error)
+	// Delete a note
+	//
+	// Deletes a particular note by directory and ID.
 	DeleteNote(context.Context, *DeleteRequest) (*empty.Empty, error)
 }
 
