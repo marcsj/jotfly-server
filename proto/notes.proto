@@ -1,0 +1,94 @@
+syntax = "proto3";
+package notes;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+message Note {
+    string owner_id = 1;
+    string directory = 2;
+    string id = 3;
+    string content = 4;
+    repeated string labels = 5;
+}
+
+message DirectoryNote {
+    string directory = 1;
+    string id = 2;
+}
+
+message DeleteRequest {
+    string directory = 1;
+    string id = 2;
+}
+
+message CreateRequest {
+    string directory = 1;
+    string id = 2;
+}
+
+message UpdateRequest {
+    string directory = 1;
+    string id = 2;
+    string content = 3;
+    repeated string labels = 4;
+}
+
+// Request for getting a single note
+message GetNoteRequest {
+    string directory = 1;
+    string id = 2;
+}
+
+// Request for getting all notes under a directory
+message GetDirectoryNotesRequest {
+    string directory = 1;
+}
+
+// Request for getting all directories
+message GetDirectoriesRequest {
+}
+
+message GetDirectoriesResponse {
+    repeated string directories = 1;
+}
+
+message GetDirectoryNotesResponse {
+    repeated DirectoryNote notes = 1;
+}
+
+
+service Notes {
+    rpc GetDirectories (GetDirectoriesRequest) returns (GetDirectoriesResponse) {
+        option (google.api.http) = {
+            get: "/notes/directory"
+        };
+    }
+    rpc GetDirectoryNotes(GetDirectoryNotesRequest) returns (GetDirectoryNotesResponse) {
+        option (google.api.http) = {
+            get: "/notes/directory/{directory}"
+        };
+    }
+    rpc GetNote (GetNoteRequest) returns (Note) {
+        option (google.api.http) = {
+            get: "/notes/directory/{directory}/note/{id}"
+        };
+    }
+    rpc CreateNote (CreateRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/notes/directory/{directory}/note/{id}"
+            body: "*"
+        };
+    }
+    rpc UpdateNote (UpdateRequest) returns (Note) {
+        option (google.api.http) = {
+            patch: "/notes/directory/{directory}/note/{id}"
+            body: "*"
+        };
+    }
+    rpc DeleteNote (DeleteRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/notes/directory/{directory}/note/{id}"
+        };
+    }
+}
