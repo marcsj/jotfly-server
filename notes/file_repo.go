@@ -1,45 +1,84 @@
 package notes
 
+import (
+	"os"
+	"path"
+	"path/filepath"
+)
+
 type NoteRepo interface {
 	CreateNote(userID string, directory string, id string) error
 	GetNote(userID string, directory string, id string) (*Note, error)
 	UpdateNote(userID string, note *Note) (*Note, error)
 	DeleteNote(userID string, directory string, id string) error
-	GetUserDirectories(userID string) ([]string, error)
 	GetNotesInDirectory(userID string, directory string) ([]string, error)
 }
 
 type fileRepo struct {
-
+	path string
 }
 
-func NewFileRepo() *fileRepo {
+func NewFileRepo(path string) *fileRepo {
 	return &fileRepo{
-
+		path: path,
 	}
 }
 
 func (r fileRepo) CreateNote(userID string, directory string, id string) error {
+	_, err := os.Create(path.Join(r.path, userID, directory, id))
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (r fileRepo) GetNote(userID string, directory string, id string) (*Note, error) {
-	return nil, nil
+	file, err := os.Open(path.Join(r.path, userID, directory, id))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return convertFileToNote(file)
 }
 
 func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
-	return nil, nil
+	file, err := os.OpenFile(
+		path.Join(r.path, userID, note.GetDirectory(), note.GetId()),
+		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
+		0666,
+		)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	noteContents, err := convertNoteToFileContent(note)
+	if err != nil {
+		return nil, err
+	}
+	_, err = file.WriteString(noteContents)
+	if err != nil {
+		return nil, err
+	}
+	return r.GetNote(userID, note.GetDirectory(), note.GetId())
 }
 
 func (r fileRepo) DeleteNote(userID string, directory string, id string) error {
-	return nil
-}
-
-func (r fileRepo) GetUserDirectories(userID string) ([]string, error) {
-	return nil, nil
+	return os.Remove(path.Join(r.path, userID, directory, id))
 }
 
 func (r fileRepo) GetNotesInDirectory(userID string, directory string) ([]string, error) {
-	return nil, nil
+	directories := make([]string, 0)
+	err := filepath.Walk(path.Join(r.path, userID, directory),
+		func(path string, info os.FileInfo, err error) error {
+			if info.IsDir() {
+				directories = append(directories, path)
+			}
+			return nil
+		})
+	if err != nil {
+		return nil, err
+	}
+	return directories, nil
 }
 
