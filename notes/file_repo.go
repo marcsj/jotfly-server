@@ -2,7 +2,6 @@ package notes
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -25,7 +24,11 @@ func NewFileRepo(path string) *fileRepo {
 }
 
 func (r fileRepo) CreateNote(userID string, directory string, id string) error {
-	_, err := os.Create(path.Join(r.path, userID, directory, id))
+	err := os.MkdirAll(filepath.Join(r.path, userID, directory), 0777)
+	if err != nil {
+		return err
+	}
+	_, err = os.Create(filepath.Join(r.path, userID, directory, id))
 	if err != nil {
 		return err
 	}
@@ -33,17 +36,17 @@ func (r fileRepo) CreateNote(userID string, directory string, id string) error {
 }
 
 func (r fileRepo) GetNote(userID string, directory string, id string) (*Note, error) {
-	file, err := os.Open(path.Join(r.path, userID, directory, id))
+	file, err := os.Open(filepath.Join(r.path, userID, directory, id))
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
-	return convertFileToNote(file)
+	return convertFileToNote(userID, directory, id, file)
 }
 
 func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
 	file, err := os.OpenFile(
-		path.Join(r.path, userID, note.GetDirectory(), note.GetId()),
+		filepath.Join(r.path, userID, note.GetDirectory(), note.GetId()),
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
 		0666,
 		)
@@ -64,12 +67,12 @@ func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
 }
 
 func (r fileRepo) DeleteNote(userID string, directory string, id string) error {
-	return os.Remove(path.Join(r.path, userID, directory, id))
+	return os.Remove(filepath.Join(r.path, userID, directory, id))
 }
 
 func (r fileRepo) GetNotesInDirectory(userID string, directory string) ([]string, error) {
 	directories := make([]string, 0)
-	err := filepath.Walk(path.Join(r.path, userID, directory),
+	err := filepath.Walk(filepath.Join(r.path, userID, directory),
 		func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				directories = append(directories, path)
