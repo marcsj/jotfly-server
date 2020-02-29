@@ -24,7 +24,7 @@ func NewFileRepo(path string) *fileRepo {
 }
 
 func (r fileRepo) CreateNote(userID string, directory string, id string) error {
-	err := os.MkdirAll(filepath.Join(r.path, userID, directory), 0777)
+	err := os.MkdirAll(filepath.Join(r.path, userID, directory), 0744)
 	if err != nil {
 		return err
 	}
