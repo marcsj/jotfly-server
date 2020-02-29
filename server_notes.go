@@ -13,13 +13,6 @@ func NewNotesServer() notes.NotesServer {
 	return &notesServer{}
 }
 
-func (s notesServer) GetDirectories(
-	ctx context.Context,
-	req *notes.GetDirectoriesRequest,
-	) (*notes.GetDirectoriesResponse, error) {
-	return nil, nil
-}
-
 func (s notesServer) GetDirectoryNotes(
 	ctx context.Context,
 	req *notes.GetDirectoryNotesRequest,

@@ -7,5 +7,6 @@ import (
 
 func main() {
 	jotfly.NewNotesServer()
+	jotfly.NewUsersServer()
 	log.Println("started joyfly server")
 }
