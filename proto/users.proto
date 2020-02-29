@@ -19,12 +19,19 @@ message GetDirectoriesResponse {
     string directories = 1;
 }
 
+// Users service handles retrieving information on a specific user and sessions
 service Users {
+    // Get a list of user's directories
+    //
+    // Returns a list of a user's directories.
     rpc GetDirectories (GetDirectoriesRequest) returns (GetDirectoriesResponse) {
         option (google.api.http) = {
             get: "/user/directories"
         };
     }
+    // Login and get a session token
+    //
+    // Checks password and returns a session token to be used in further requests for a user.
     rpc Login(User) returns (Session) {
         option (google.api.http) = {
             post: "/user/login"

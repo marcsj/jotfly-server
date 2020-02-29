@@ -43,27 +43,12 @@ message GetDirectoryNotesRequest {
     string directory = 1;
 }
 
-message GetDirectoriesRequest {
-}
-
-message GetDirectoriesResponse {
-    repeated string directories = 1;
-}
-
 message GetDirectoryNotesResponse {
     repeated DirectoryNote notes = 1;
 }
 
 // Notes service handles the CRUD operations associated with notes
 service Notes {
-    // Get list of directories
-    //
-    // Returns a list of a user's directories.
-    rpc GetDirectories (GetDirectoriesRequest) returns (GetDirectoriesResponse) {
-        option (google.api.http) = {
-            get: "/notes/directory"
-        };
-    }
     // Get list of notes in directory
     //
     // Returns a list of a user's notes for a specific directory.

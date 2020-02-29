@@ -13,6 +13,8 @@
   "paths": {
     "/user/directories": {
       "get": {
+        "summary": "Get a list of user's directories",
+        "description": "Returns a list of a user's directories.",
         "operationId": "GetDirectories",
         "responses": {
           "200": {
@@ -35,6 +37,8 @@
     },
     "/user/login": {
       "post": {
+        "summary": "Login and get a session token",
+        "description": "Checks password and returns a session token to be used in further requests for a user.",
         "operationId": "Login",
         "responses": {
           "200": {

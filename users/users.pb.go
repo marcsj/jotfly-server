@@ -223,7 +223,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type UsersClient interface {
+	// Get a list of user's directories
+	//
+	// Returns a list of a user's directories.
 	GetDirectories(ctx context.Context, in *GetDirectoriesRequest, opts ...grpc.CallOption) (*GetDirectoriesResponse, error)
+	// Login and get a session token
+	//
+	// Checks password and returns a session token to be used in further requests for a user.
 	Login(ctx context.Context, in *User, opts ...grpc.CallOption) (*Session, error)
 }
 
@@ -255,7 +261,13 @@ func (c *usersClient) Login(ctx context.Context, in *User, opts ...grpc.CallOpti
 
 // UsersServer is the server API for Users service.
 type UsersServer interface {
+	// Get a list of user's directories
+	//
+	// Returns a list of a user's directories.
 	GetDirectories(context.Context, *GetDirectoriesRequest) (*GetDirectoriesResponse, error)
+	// Login and get a session token
+	//
+	// Checks password and returns a session token to be used in further requests for a user.
 	Login(context.Context, *User) (*Session, error)
 }
 
