@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-const testFileLocation = "./test"
 func setupFileRepo() (NoteRepo, string, error) {
 	dir, err := ioutil.TempDir("", "test")
 	if err != nil {

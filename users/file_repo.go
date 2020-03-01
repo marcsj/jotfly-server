@@ -23,11 +23,7 @@ func NewFileRepo(path string) *userRepo {
 }
 
 func (r userRepo) CreateUser(userID string, password []byte) error {
-	err := os.MkdirAll(filepath.Join(r.path, userID), 0744)
-	if err != nil {
-		return err
-	}
-	_, err = os.Create(filepath.Join(r.path, userID))
+	_, err := os.Create(filepath.Join(r.path, userID))
 	if err != nil {
 		return err
 	}
