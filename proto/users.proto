@@ -5,7 +5,7 @@ import "google/api/annotations.proto";
 
 message User {
     string id = 1;
-    bytes password = 2;
+    string password = 2;
 }
 
 message UserInfo {
