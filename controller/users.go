@@ -6,25 +6,25 @@ import (
 	"github.com/marcsj/jotfly-server/util"
 )
 
-type Controller interface {
+type UsersController interface {
 	Login(userID string, password string) (string, error)
 	GetDirectories(userID string) ([]string, error)
 	CreateUser(userID string, password string, role users.Role) error
 }
 
-type controller struct {
+type usersController struct {
 	repo repo.UsersRepo
 	key  []byte
 }
 
-func NewController(repo repo.UsersRepo, key []byte) Controller {
-	return &controller{
+func NewUsersController(repo repo.UsersRepo, key []byte) UsersController {
+	return &usersController{
 		repo: repo,
 		key: key,
 	}
 }
 
-func (c controller) Login(userID string, password string) (string, error) {
+func (c usersController) Login(userID string, password string) (string, error) {
 	user, err := c.checkPassword(userID, password)
 	if err != nil {
 		return "", err
@@ -32,7 +32,7 @@ func (c controller) Login(userID string, password string) (string, error) {
 	return util.CreateToken(userID, user.GetRole(), c.key)
 }
 
-func (c controller) GetDirectories(userID string) ([]string, error) {
+func (c usersController) GetDirectories(userID string) ([]string, error) {
 	user, err := c.repo.GetUser(userID)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (c controller) GetDirectories(userID string) ([]string, error) {
 	return user.GetDirectories(), nil
 }
 
-func (c controller) addDirectory(userID string, directory string) error {
+func (c usersController) addDirectory(userID string, directory string) error {
 	user, err := c.repo.GetUser(userID)
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func (c controller) addDirectory(userID string, directory string) error {
 	return err
 }
 
-func (c controller) CreateUser(userID string, password string, role users.Role) error {
+func (c usersController) CreateUser(userID string, password string, role users.Role) error {
 	salt, err := util.GenerateRandomBytes(util.SaltLength)
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (c controller) CreateUser(userID string, password string, role users.Role) 
 	return err
 }
 
-func (c controller) checkPassword(userID string, password string) (*users.UserInfo, error) {
+func (c usersController) checkPassword(userID string, password string) (*users.UserInfo, error) {
 	user, err := c.repo.GetUser(userID)
 	if err != nil {
 		return nil, err

@@ -3,16 +3,16 @@ package server
 import (
 	"context"
 	"errors"
-	controller2 "github.com/marcsj/jotfly-server/controller"
+	"github.com/marcsj/jotfly-server/controller"
 	"github.com/marcsj/jotfly-server/users"
 	"google.golang.org/grpc/metadata"
 )
 
 type usersServer struct {
-	controller controller2.Controller
+	controller controller.UsersController
 }
 
-func NewUsersServer(controller controller2.Controller) users.UsersServer {
+func NewUsersServer(controller controller.UsersController) users.UsersServer {
 	return &usersServer{
 		controller: controller,
 	}
