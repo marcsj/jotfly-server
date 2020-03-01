@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func setupFileRepo() (UserRepo, string, error) {
+func setupFileRepo() (Repo, string, error) {
 	dir, err := ioutil.TempDir("", "test")
 	if err != nil {
 		return nil, dir, err
