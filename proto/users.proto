@@ -14,8 +14,9 @@ message UserInfo {
         ADMIN = 1;
     }
     bytes password = 1;
-    Role role = 2;
-    repeated string directories = 3;
+    bytes salt = 2;
+    Role role = 3;
+    repeated string directories = 4;
 }
 
 message Session {
