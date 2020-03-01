@@ -1,13 +1,15 @@
 package notes
 
 import (
-	"io/ioutil"
+	"encoding/json"
 	"os"
 )
 
 func convertFileToNote(
 	userID string, directory string, id string, file *os.File) (*Note, error) {
-	data, err := ioutil.ReadAll(file)
+	fileNote := &FileNote{}
+	decoder := json.NewDecoder(file)
+	err := decoder.Decode(fileNote)
 	if err != nil {
 		return nil, err
 	}
@@ -15,11 +17,19 @@ func convertFileToNote(
 		OwnerId: userID,
 		Directory: directory,
 		Id: id,
-		Content: string(data),
+		Content: fileNote.GetContent(),
+		Labels: fileNote.GetLabels(),
 		 }, nil
 }
 
 func convertNoteToFileContent(note *Note) (string, error) {
-	content := note.GetContent()
-	return content, nil
+	fileNote := FileNote{
+		Labels: note.GetLabels(),
+		Content: note.GetContent(),
+	}
+	content, err := json.Marshal(fileNote)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
 }

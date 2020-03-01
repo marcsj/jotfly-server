@@ -12,6 +12,11 @@ message Note {
     repeated string labels = 5;
 }
 
+message FileNote {
+    repeated string labels = 1;
+    string content = 2;
+}
+
 message DirectoryNote {
     string directory = 1;
     string id = 2;
