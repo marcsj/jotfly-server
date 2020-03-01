@@ -28,7 +28,7 @@ message GetDirectoriesRequest {
 }
 
 message GetDirectoriesResponse {
-    string directories = 1;
+    repeated string directories = 1;
 }
 
 // Users service handles retrieving information on a specific user and sessions
