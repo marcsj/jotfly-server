@@ -8,6 +8,17 @@ message User {
     bytes password = 2;
 }
 
+message UserInfo {
+    enum Role {
+        REGULAR = 0;
+        ADMIN = 1;
+    }
+    bytes password = 1;
+    bool admin = 2;
+    Role role = 3;
+    repeated string directories = 4;
+}
+
 message Session {
     string token = 1;
 }
