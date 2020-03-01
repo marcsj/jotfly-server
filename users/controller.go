@@ -1,21 +1,29 @@
 package users
 
 type Controller interface {
-
+	Login(userID string, password string) (string, error)
+	GetDirectories(userID string) ([]string, error)
+	CreateUser(userID string, password string, role Role) error
 }
 
 type controller struct {
 	repo Repo
+	key []byte
 }
 
-func NewController(repo Repo) Controller {
+func NewController(repo Repo, key []byte) Controller {
 	return &controller{
 		repo: repo,
+		key: key,
 	}
 }
 
-func (c controller) Login(userID string, password []byte) (*Session, error) {
-	return nil, nil
+func (c controller) Login(userID string, password string) (string, error) {
+	user, err := c.checkPassword(userID, password)
+	if err != nil {
+		return "", err
+	}
+	return createToken(userID, user.GetRole(), c.key)
 }
 
 func (c controller) GetDirectories(userID string) ([]string, error) {
@@ -36,8 +44,8 @@ func (c controller) addDirectory(userID string, directory string) error {
 	return err
 }
 
-func (c controller) CreateUser(userID string, password string, role UserInfo_Role) error {
-	salt, err := generateRandomBytes(16)
+func (c controller) CreateUser(userID string, password string, role Role) error {
+	salt, err := generateRandomBytes(saltLength)
 	if err != nil {
 		return err
 	}
@@ -55,10 +63,14 @@ func (c controller) CreateUser(userID string, password string, role UserInfo_Rol
 	return err
 }
 
-func (c controller) checkPassword(userID string, password string) error {
+func (c controller) checkPassword(userID string, password string) (*UserInfo, error) {
 	user, err := c.repo.GetUser(userID)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return checkPassword(password, user.GetPassword(), user.GetSalt())
+	err = checkPassword(password, user.GetPassword(), user.GetSalt())
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

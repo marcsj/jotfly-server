@@ -8,11 +8,12 @@ message User {
     string password = 2;
 }
 
+enum Role {
+    REGULAR = 0;
+    ADMIN = 1;
+}
+
 message UserInfo {
-    enum Role {
-        REGULAR = 0;
-        ADMIN = 1;
-    }
     bytes password = 1;
     bytes salt = 2;
     Role role = 3;

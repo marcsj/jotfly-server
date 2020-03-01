@@ -40,12 +40,12 @@ func TestFileRepo_UpdateNote(t *testing.T) {
 	}
 	user, err := repo.UpdateUser(ownerID, &UserInfo{
 		Password: pass,
-		Role: UserInfo_ADMIN,
+		Role: Role_ADMIN,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if user.GetRole() != UserInfo_ADMIN {
+	if user.GetRole() != Role_ADMIN {
 		t.Fatal("user role is not admin")
 	}
 }

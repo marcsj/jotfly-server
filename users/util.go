@@ -5,9 +5,14 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"errors"
+	"github.com/google/uuid"
+	"github.com/o1egl/paseto"
 	"golang.org/x/crypto/argon2"
 	"os"
+	"time"
 )
+
+const saltLength = 16
 
 func convertFileToUser(file *os.File) (*UserInfo, error) {
 	userInfo := &UserInfo{}
@@ -53,5 +58,34 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+func createToken(userID string, role Role, key []byte) (string, error) {
+	jsonToken := paseto.JSONToken{
+		Audience: "jotfly-user",
+		Issuer: "jotfly-server",
+		Jti: uuid.New().String(),
+		Subject: userID,
+		IssuedAt: time.Now(),
+		Expiration: time.Now().AddDate(0, 0, 1),
+		NotBefore: time.Now(),
+	}
+	jsonToken.Set("role", role.String())
+	return paseto.NewV2().Encrypt(key, jsonToken, nil)
+}
+
+func checkGetToken(token string, key []byte) (userID string, role Role, err error) {
+	jsonToken := &paseto.JSONToken{}
+	err = paseto.NewV2().Decrypt(token, key, jsonToken, nil)
+	if err != nil {
+		return
+	}
+	if jsonToken.Expiration.Before(time.Now()) {
+		err = errors.New("token expired")
+		return
+	}
+	userID = jsonToken.Subject
+	role = Role(Role_value[(jsonToken.Get("role"))])
+	return
 }
 
