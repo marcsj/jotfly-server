@@ -16,7 +16,7 @@ type userRepo struct {
 	path string
 }
 
-func NewUserRepo(path string) *userRepo {
+func NewFileRepo(path string) *userRepo {
 	return &userRepo{
 		path: path,
 	}
