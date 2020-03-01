@@ -2,13 +2,14 @@ package repo
 
 import (
 	"github.com/marcsj/jotfly-server/notes"
+	"github.com/marcsj/jotfly-server/util"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 )
 
-type Repo interface {
+type NotesRepo interface {
 	CreateNote(userID string, directory string, id string) error
 	GetNote(userID string, directory string, id string) (*notes.Note, error)
 	UpdateNote(userID string, note *notes.Note) (*notes.Note, error)
@@ -16,18 +17,18 @@ type Repo interface {
 	GetNotesInDirectory(userID string, directory string) ([]string, error)
 }
 
-type fileRepo struct {
+type fileNotesRepo struct {
 	path string
 	mx sync.Mutex
 }
 
-func NewFileRepo(path string) *fileRepo {
-	return &fileRepo{
+func NewFileNotesRepo(path string) *fileNotesRepo {
+	return &fileNotesRepo{
 		path: path,
 	}
 }
 
-func (r fileRepo) CreateNote(userID string, directory string, id string) error {
+func (r fileNotesRepo) CreateNote(userID string, directory string, id string) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	err := os.MkdirAll(filepath.Join(r.path, userID, directory), 0744)
@@ -41,7 +42,7 @@ func (r fileRepo) CreateNote(userID string, directory string, id string) error {
 	return nil
 }
 
-func (r fileRepo) GetNote(userID string, directory string, id string) (*notes.Note, error) {
+func (r fileNotesRepo) GetNote(userID string, directory string, id string) (*notes.Note, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.Open(filepath.Join(r.path, userID, directory, id))
@@ -49,10 +50,10 @@ func (r fileRepo) GetNote(userID string, directory string, id string) (*notes.No
 		return nil, err
 	}
 	defer file.Close()
-	return notes.convertFileToNote(userID, directory, id, file)
+	return util.ConvertFileToNote(userID, directory, id, file)
 }
 
-func (r fileRepo) UpdateNote(userID string, note *notes.Note) (*notes.Note, error) {
+func (r fileNotesRepo) UpdateNote(userID string, note *notes.Note) (*notes.Note, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.OpenFile(
@@ -65,7 +66,7 @@ func (r fileRepo) UpdateNote(userID string, note *notes.Note) (*notes.Note, erro
 	}
 	defer file.Close()
 
-	noteContents, err := notes.convertNoteToFileContent(note)
+	noteContents, err := util.ConvertNoteToFileContent(note)
 	if err != nil {
 		return nil, err
 	}
@@ -79,16 +80,16 @@ func (r fileRepo) UpdateNote(userID string, note *notes.Note) (*notes.Note, erro
 		return nil, err
 	}
 	defer file.Close()
-	return notes.convertFileToNote(userID, note.GetDirectory(), note.GetId(), file)
+	return util.ConvertFileToNote(userID, note.GetDirectory(), note.GetId(), file)
 }
 
-func (r fileRepo) DeleteNote(userID string, directory string, id string) error {
+func (r fileNotesRepo) DeleteNote(userID string, directory string, id string) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	return os.Remove(filepath.Join(r.path, userID, directory, id))
 }
 
-func (r fileRepo) GetNotesInDirectory(userID string, directory string) ([]string, error) {
+func (r fileNotesRepo) GetNotesInDirectory(userID string, directory string) ([]string, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	notes := make([]string, 0)

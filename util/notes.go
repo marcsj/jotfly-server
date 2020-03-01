@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func convertFileToNote(
+func ConvertFileToNote(
 	userID string, directory string, id string, file *os.File) (*notes.Note, error) {
 	fileNote := &notes.FileNote{}
 	decoder := json.NewDecoder(file)
@@ -23,7 +23,7 @@ func convertFileToNote(
 		 }, nil
 }
 
-func convertNoteToFileContent(note *notes.Note) (string, error) {
+func ConvertNoteToFileContent(note *notes.Note) (string, error) {
 	fileNote := notes.FileNote{
 		Labels: note.GetLabels(),
 		Content: note.GetContent(),

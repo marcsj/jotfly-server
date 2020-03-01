@@ -8,16 +8,16 @@ import (
 	"testing"
 )
 
-func setupFileRepo() (Repo, string, error) {
+func setupFileNotesRepo() (NotesRepo, string, error) {
 	dir, err := ioutil.TempDir("", "test")
 	if err != nil {
 		return nil, dir, err
 	}
-	return NewFileRepo(dir), dir, nil
+	return NewFileNotesRepo(dir), dir, nil
 }
 
-func TestFileRepo_CreateNote(t *testing.T) {
-	repo, dir, err := setupFileRepo()
+func TestFileNotesRepo_CreateNote(t *testing.T) {
+	repo, dir, err := setupFileNotesRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,12 +28,12 @@ func TestFileRepo_CreateNote(t *testing.T) {
 	}
 }
 
-func TestFileRepo_UpdateNote(t *testing.T) {
+func TestFileNotesRepo_UpdateNote(t *testing.T) {
 	ownerID := "test@aol.com"
 	directory := "test"
 	id := "test-note"
 	content := "This is a quality note!"
-	repo, dir, err := setupFileRepo()
+	repo, dir, err := setupFileNotesRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,11 +56,11 @@ func TestFileRepo_UpdateNote(t *testing.T) {
 	}
 }
 
-func TestFileRepo_DeleteNote(t *testing.T) {
+func TestFileNotesRepo_DeleteNote(t *testing.T) {
 	ownerID := "test@aol.com"
 	directory := "test"
 	id := "test-note"
-	repo, dir, err := setupFileRepo()
+	repo, dir, err := setupFileNotesRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,11 +79,11 @@ func TestFileRepo_DeleteNote(t *testing.T) {
 	}
 }
 
-func TestFileRepo_GetNotesInDirectory(t *testing.T) {
+func TestFileNotesRepo_GetNotesInDirectory(t *testing.T) {
 	ownerID := "test@aol.com"
 	directory := "test"
 	ids := []string{"test1", "test2", "test3"}
-	repo, dir, err := setupFileRepo()
+	repo, dir, err := setupFileNotesRepo()
 	if err != nil {
 		t.Fatal(err)
 	}

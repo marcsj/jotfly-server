@@ -7,16 +7,16 @@ import (
 	"testing"
 )
 
-func setupFileRepo() (Repo, string, error) {
+func setupFileUsersRepo() (UsersRepo, string, error) {
 	dir, err := ioutil.TempDir("", "test")
 	if err != nil {
 		return nil, dir, err
 	}
-	return NewFileRepo(dir), dir, nil
+	return NewFileUsersRepo(dir), dir, nil
 }
 
 func TestFileRepo_CreateUser(t *testing.T) {
-	repo, dir, err := setupFileRepo()
+	repo, dir, err := setupFileUsersRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func TestFileRepo_CreateUser(t *testing.T) {
 func TestFileRepo_UpdateNote(t *testing.T) {
 	ownerID := "test@aol.com"
 	pass := []byte("test pass")
-	repo, dir, err := setupFileRepo()
+	repo, dir, err := setupFileUsersRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestFileRepo_UpdateNote(t *testing.T) {
 func TestFileRepo_DeleteNote(t *testing.T) {
 	ownerID := "test@aol.com"
 	pass := []byte("test pass")
-	repo, dir, err := setupFileRepo()
+	repo, dir, err := setupFileUsersRepo()
 	if err != nil {
 		t.Fatal(err)
 	}

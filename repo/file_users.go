@@ -2,30 +2,31 @@ package repo
 
 import (
 	"github.com/marcsj/jotfly-server/users"
+	"github.com/marcsj/jotfly-server/util"
 	"os"
 	"path/filepath"
 	"sync"
 )
 
-type Repo interface {
+type UsersRepo interface {
 	CreateUser(userID string, password []byte) error
 	GetUser(userID string) (*users.UserInfo, error)
 	UpdateUser(userID string, user *users.UserInfo) (*users.UserInfo, error)
 	DeleteUser(userID string) error
 }
 
-type fileRepo struct {
+type fileUsersRepo struct {
 	path string
 	mx sync.Mutex
 }
 
-func NewFileRepo(path string) *fileRepo {
-	return &fileRepo{
+func NewFileUsersRepo(path string) *fileUsersRepo {
+	return &fileUsersRepo{
 		path: path,
 	}
 }
 
-func (r fileRepo) CreateUser(userID string, password []byte) error {
+func (r fileUsersRepo) CreateUser(userID string, password []byte) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	_, err := os.Create(filepath.Join(r.path, userID))
@@ -35,7 +36,7 @@ func (r fileRepo) CreateUser(userID string, password []byte) error {
 	return nil
 }
 
-func (r fileRepo) GetUser(userID string) (*users.UserInfo, error) {
+func (r fileUsersRepo) GetUser(userID string) (*users.UserInfo, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.Open(filepath.Join(r.path, userID))
@@ -43,10 +44,10 @@ func (r fileRepo) GetUser(userID string) (*users.UserInfo, error) {
 		return nil, err
 	}
 	defer file.Close()
-	return users.convertFileToUser(file)
+	return util.ConvertFileToUser(file)
 }
 
-func (r fileRepo) UpdateUser(userID string, user *users.UserInfo) (*users.UserInfo, error) {
+func (r fileUsersRepo) UpdateUser(userID string, user *users.UserInfo) (*users.UserInfo, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.OpenFile(
@@ -59,7 +60,7 @@ func (r fileRepo) UpdateUser(userID string, user *users.UserInfo) (*users.UserIn
 	}
 	defer file.Close()
 
-	noteContents, err := users.convertUserToFileContent(user)
+	noteContents, err := util.ConvertUserToFileContent(user)
 	if err != nil {
 		return nil, err
 	}
@@ -73,10 +74,10 @@ func (r fileRepo) UpdateUser(userID string, user *users.UserInfo) (*users.UserIn
 		return nil, err
 	}
 	defer file.Close()
-	return users.convertFileToUser(file)
+	return util.ConvertFileToUser(file)
 }
 
-func (r fileRepo) DeleteUser(userID string) error {
+func (r fileUsersRepo) DeleteUser(userID string) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	return os.Remove(filepath.Join(r.path, userID))

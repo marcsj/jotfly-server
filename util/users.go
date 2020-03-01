@@ -13,9 +13,9 @@ import (
 	"time"
 )
 
-const saltLength = 16
+const SaltLength = 16
 
-func convertFileToUser(file *os.File) (*users.UserInfo, error) {
+func ConvertFileToUser(file *os.File) (*users.UserInfo, error) {
 	userInfo := &users.UserInfo{}
 	decoder := json.NewDecoder(file)
 	err := decoder.Decode(userInfo)
@@ -25,7 +25,7 @@ func convertFileToUser(file *os.File) (*users.UserInfo, error) {
 	return userInfo, nil
 }
 
-func convertUserToFileContent(user *users.UserInfo) (string, error) {
+func ConvertUserToFileContent(user *users.UserInfo) (string, error) {
 	content, err := json.Marshal(user)
 	if err != nil {
 		return "", err
@@ -33,7 +33,7 @@ func convertUserToFileContent(user *users.UserInfo) (string, error) {
 	return string(content), nil
 }
 
-func generatePassword(password string, salt []byte) ([]byte) {
+func GeneratePassword(password string, salt []byte) ([]byte) {
 	memory := uint32(64 * 1024)
 	iterations := uint32(3)
 	parallelism := uint8(2)
@@ -44,15 +44,15 @@ func generatePassword(password string, salt []byte) ([]byte) {
 	return hash
 }
 
-func checkPassword(entered string, password []byte, salt []byte) error {
-	checked := generatePassword(entered, salt)
+func CheckPassword(entered string, password []byte, salt []byte) error {
+	checked := GeneratePassword(entered, salt)
 	if bytes.Compare(checked, password) != 0 {
 		return errors.New("password does not match")
 	}
 	return nil
 }
 
-func generateRandomBytes(n uint32) ([]byte, error) {
+func GenerateRandomBytes(n uint32) ([]byte, error) {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -61,7 +61,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
-func createToken(userID string, role users.Role, key []byte) (string, error) {
+func CreateToken(userID string, role users.Role, key []byte) (string, error) {
 	jsonToken := paseto.JSONToken{
 		Audience: "jotfly-user",
 		Issuer: "jotfly-server",
@@ -75,7 +75,7 @@ func createToken(userID string, role users.Role, key []byte) (string, error) {
 	return paseto.NewV2().Encrypt(key, jsonToken, nil)
 }
 
-func checkGetToken(token string, key []byte) (userID string, role users.Role, err error) {
+func CheckGetToken(token string, key []byte) (userID string, role users.Role, err error) {
 	jsonToken := &paseto.JSONToken{}
 	err = paseto.NewV2().Decrypt(token, key, jsonToken, nil)
 	if err != nil {

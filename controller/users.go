@@ -1,8 +1,9 @@
 package controller
 
 import (
-	repo2 "github.com/marcsj/jotfly-server/repo"
+	repo "github.com/marcsj/jotfly-server/repo"
 	"github.com/marcsj/jotfly-server/users"
+	"github.com/marcsj/jotfly-server/util"
 )
 
 type Controller interface {
@@ -12,11 +13,11 @@ type Controller interface {
 }
 
 type controller struct {
-	repo repo2.Repo
+	repo repo.UsersRepo
 	key  []byte
 }
 
-func NewController(repo repo2.Repo, key []byte) Controller {
+func NewController(repo repo.UsersRepo, key []byte) Controller {
 	return &controller{
 		repo: repo,
 		key: key,
@@ -28,7 +29,7 @@ func (c controller) Login(userID string, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return users.createToken(userID, user.GetRole(), c.key)
+	return util.CreateToken(userID, user.GetRole(), c.key)
 }
 
 func (c controller) GetDirectories(userID string) ([]string, error) {
@@ -50,11 +51,11 @@ func (c controller) addDirectory(userID string, directory string) error {
 }
 
 func (c controller) CreateUser(userID string, password string, role users.Role) error {
-	salt, err := users.generateRandomBytes(users.saltLength)
+	salt, err := util.GenerateRandomBytes(util.SaltLength)
 	if err != nil {
 		return err
 	}
-	hashedPass := users.generatePassword(password, salt)
+	hashedPass := util.GeneratePassword(password, salt)
 	err = c.repo.CreateUser(userID, hashedPass)
 	if err != nil {
 		return err
@@ -73,7 +74,7 @@ func (c controller) checkPassword(userID string, password string) (*users.UserIn
 	if err != nil {
 		return nil, err
 	}
-	err = users.checkPassword(password, user.GetPassword(), user.GetSalt())
+	err = util.CheckPassword(password, user.GetPassword(), user.GetSalt())
 	if err != nil {
 		return nil, err
 	}
