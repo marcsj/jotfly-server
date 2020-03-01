@@ -3,6 +3,7 @@ package notes
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type NoteRepo interface {
@@ -71,17 +72,18 @@ func (r fileRepo) DeleteNote(userID string, directory string, id string) error {
 }
 
 func (r fileRepo) GetNotesInDirectory(userID string, directory string) ([]string, error) {
-	directories := make([]string, 0)
+	notes := make([]string, 0)
 	err := filepath.Walk(filepath.Join(r.path, userID, directory),
 		func(path string, info os.FileInfo, err error) error {
-			if info.IsDir() {
-				directories = append(directories, path)
+			if !info.IsDir() {
+				name := strings.SplitAfter(path, "/")
+				notes = append(notes, name[len(name)-1])
 			}
 			return nil
 		})
 	if err != nil {
 		return nil, err
 	}
-	return directories, nil
+	return notes, nil
 }
 
