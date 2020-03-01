@@ -40,16 +40,6 @@ func (c usersController) GetDirectories(userID string) ([]string, error) {
 	return user.GetDirectories(), nil
 }
 
-func (c usersController) addDirectory(userID string, directory string) error {
-	user, err := c.repo.GetUser(userID)
-	if err != nil {
-		return err
-	}
-	user.Directories = append(user.Directories, directory)
-	_, err = c.repo.UpdateUser(userID, user)
-	return err
-}
-
 func (c usersController) CreateUser(userID string, password string, role users.Role) error {
 	salt, err := util.GenerateRandomBytes(util.SaltLength)
 	if err != nil {
