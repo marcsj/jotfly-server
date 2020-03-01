@@ -1,6 +1,7 @@
-package users
+package repo
 
 import (
+	"github.com/marcsj/jotfly-server/users"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -38,14 +39,14 @@ func TestFileRepo_UpdateNote(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	user, err := repo.UpdateUser(ownerID, &UserInfo{
+	user, err := repo.UpdateUser(ownerID, &users.UserInfo{
 		Password: pass,
-		Role: Role_ADMIN,
+		Role:     users.Role_ADMIN,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if user.GetRole() != Role_ADMIN {
+	if user.GetRole() != users.Role_ADMIN {
 		t.Fatal("user role is not admin")
 	}
 }

@@ -1,17 +1,18 @@
-package jotfly
+package server
 
 import (
 	"context"
 	"errors"
+	controller2 "github.com/marcsj/jotfly-server/controller"
 	"github.com/marcsj/jotfly-server/users"
 	"google.golang.org/grpc/metadata"
 )
 
 type usersServer struct {
-	controller users.Controller
+	controller controller2.Controller
 }
 
-func NewUsersServer(controller users.Controller) users.UsersServer {
+func NewUsersServer(controller controller2.Controller) users.UsersServer {
 	return &usersServer{
 		controller: controller,
 	}

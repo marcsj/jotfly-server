@@ -1,6 +1,7 @@
-package notes
+package repo
 
 import (
+	"github.com/marcsj/jotfly-server/notes"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,8 +10,8 @@ import (
 
 type Repo interface {
 	CreateNote(userID string, directory string, id string) error
-	GetNote(userID string, directory string, id string) (*Note, error)
-	UpdateNote(userID string, note *Note) (*Note, error)
+	GetNote(userID string, directory string, id string) (*notes.Note, error)
+	UpdateNote(userID string, note *notes.Note) (*notes.Note, error)
 	DeleteNote(userID string, directory string, id string) error
 	GetNotesInDirectory(userID string, directory string) ([]string, error)
 }
@@ -40,7 +41,7 @@ func (r fileRepo) CreateNote(userID string, directory string, id string) error {
 	return nil
 }
 
-func (r fileRepo) GetNote(userID string, directory string, id string) (*Note, error) {
+func (r fileRepo) GetNote(userID string, directory string, id string) (*notes.Note, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.Open(filepath.Join(r.path, userID, directory, id))
@@ -48,10 +49,10 @@ func (r fileRepo) GetNote(userID string, directory string, id string) (*Note, er
 		return nil, err
 	}
 	defer file.Close()
-	return convertFileToNote(userID, directory, id, file)
+	return notes.convertFileToNote(userID, directory, id, file)
 }
 
-func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
+func (r fileRepo) UpdateNote(userID string, note *notes.Note) (*notes.Note, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.OpenFile(
@@ -64,7 +65,7 @@ func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
 	}
 	defer file.Close()
 
-	noteContents, err := convertNoteToFileContent(note)
+	noteContents, err := notes.convertNoteToFileContent(note)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,7 @@ func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
 		return nil, err
 	}
 	defer file.Close()
-	return convertFileToNote(userID, note.GetDirectory(), note.GetId(), file)
+	return notes.convertFileToNote(userID, note.GetDirectory(), note.GetId(), file)
 }
 
 func (r fileRepo) DeleteNote(userID string, directory string, id string) error {

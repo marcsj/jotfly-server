@@ -1,19 +1,20 @@
-package notes
+package util
 
 import (
 	"encoding/json"
+	"github.com/marcsj/jotfly-server/notes"
 	"os"
 )
 
 func convertFileToNote(
-	userID string, directory string, id string, file *os.File) (*Note, error) {
-	fileNote := &FileNote{}
+	userID string, directory string, id string, file *os.File) (*notes.Note, error) {
+	fileNote := &notes.FileNote{}
 	decoder := json.NewDecoder(file)
 	err := decoder.Decode(fileNote)
 	if err != nil {
 		return nil, err
 	}
-	return &Note{
+	return &notes.Note{
 		OwnerId: userID,
 		Directory: directory,
 		Id: id,
@@ -22,8 +23,8 @@ func convertFileToNote(
 		 }, nil
 }
 
-func convertNoteToFileContent(note *Note) (string, error) {
-	fileNote := FileNote{
+func convertNoteToFileContent(note *notes.Note) (string, error) {
+	fileNote := notes.FileNote{
 		Labels: note.GetLabels(),
 		Content: note.GetContent(),
 	}

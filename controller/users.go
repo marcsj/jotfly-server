@@ -1,17 +1,22 @@
-package users
+package controller
+
+import (
+	repo2 "github.com/marcsj/jotfly-server/repo"
+	"github.com/marcsj/jotfly-server/users"
+)
 
 type Controller interface {
 	Login(userID string, password string) (string, error)
 	GetDirectories(userID string) ([]string, error)
-	CreateUser(userID string, password string, role Role) error
+	CreateUser(userID string, password string, role users.Role) error
 }
 
 type controller struct {
-	repo Repo
-	key []byte
+	repo repo2.Repo
+	key  []byte
 }
 
-func NewController(repo Repo, key []byte) Controller {
+func NewController(repo repo2.Repo, key []byte) Controller {
 	return &controller{
 		repo: repo,
 		key: key,
@@ -23,7 +28,7 @@ func (c controller) Login(userID string, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return createToken(userID, user.GetRole(), c.key)
+	return users.createToken(userID, user.GetRole(), c.key)
 }
 
 func (c controller) GetDirectories(userID string) ([]string, error) {
@@ -44,17 +49,17 @@ func (c controller) addDirectory(userID string, directory string) error {
 	return err
 }
 
-func (c controller) CreateUser(userID string, password string, role Role) error {
-	salt, err := generateRandomBytes(saltLength)
+func (c controller) CreateUser(userID string, password string, role users.Role) error {
+	salt, err := users.generateRandomBytes(users.saltLength)
 	if err != nil {
 		return err
 	}
-	hashedPass := generatePassword(password, salt)
+	hashedPass := users.generatePassword(password, salt)
 	err = c.repo.CreateUser(userID, hashedPass)
 	if err != nil {
 		return err
 	}
-	_, err = c.repo.UpdateUser(userID, &UserInfo{
+	_, err = c.repo.UpdateUser(userID, &users.UserInfo{
 		Password: hashedPass,
 		Salt: salt,
 		Role: role,
@@ -63,12 +68,12 @@ func (c controller) CreateUser(userID string, password string, role Role) error 
 	return err
 }
 
-func (c controller) checkPassword(userID string, password string) (*UserInfo, error) {
+func (c controller) checkPassword(userID string, password string) (*users.UserInfo, error) {
 	user, err := c.repo.GetUser(userID)
 	if err != nil {
 		return nil, err
 	}
-	err = checkPassword(password, user.GetPassword(), user.GetSalt())
+	err = users.checkPassword(password, user.GetPassword(), user.GetSalt())
 	if err != nil {
 		return nil, err
 	}

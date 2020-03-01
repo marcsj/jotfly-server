@@ -1,6 +1,7 @@
-package notes
+package repo
 
 import (
+	"github.com/marcsj/jotfly-server/notes"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -41,7 +42,7 @@ func TestFileRepo_UpdateNote(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	newNote, err := repo.UpdateNote(ownerID, &Note{
+	newNote, err := repo.UpdateNote(ownerID, &notes.Note{
 		OwnerId: ownerID,
 		Directory: directory,
 		Id: id,

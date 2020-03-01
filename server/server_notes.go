@@ -1,4 +1,4 @@
-package jotfly
+package server
 
 import (
 	"context"

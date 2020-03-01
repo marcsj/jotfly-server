@@ -1,6 +1,9 @@
-package users
+package util
 
-import "testing"
+import (
+	"github.com/marcsj/jotfly-server/users"
+	"testing"
+)
 
 func Test_Password(t *testing.T) {
 	salt, err := generateRandomBytes(16)
@@ -24,7 +27,7 @@ func Test_Password(t *testing.T) {
 func Test_CreateToken(t *testing.T) {
 	id := "test@aol.com"
 	key := []byte("YELLOW SUBMARINE, BLACK WIZARDRY")
-	token, err := createToken(id, Role_ADMIN, key)
+	token, err := createToken(id, users.Role_ADMIN, key)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +36,7 @@ func Test_CreateToken(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if userID != id || role != Role_ADMIN {
+	if userID != id || role != users.Role_ADMIN {
 		t.Fatal("payload came back wrong")
 	}
 }

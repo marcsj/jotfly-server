@@ -1,4 +1,4 @@
-package users
+package util
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
+	"github.com/marcsj/jotfly-server/users"
 	"github.com/o1egl/paseto"
 	"golang.org/x/crypto/argon2"
 	"os"
@@ -14,8 +15,8 @@ import (
 
 const saltLength = 16
 
-func convertFileToUser(file *os.File) (*UserInfo, error) {
-	userInfo := &UserInfo{}
+func convertFileToUser(file *os.File) (*users.UserInfo, error) {
+	userInfo := &users.UserInfo{}
 	decoder := json.NewDecoder(file)
 	err := decoder.Decode(userInfo)
 	if err != nil {
@@ -24,7 +25,7 @@ func convertFileToUser(file *os.File) (*UserInfo, error) {
 	return userInfo, nil
 }
 
-func convertUserToFileContent(user *UserInfo) (string, error) {
+func convertUserToFileContent(user *users.UserInfo) (string, error) {
 	content, err := json.Marshal(user)
 	if err != nil {
 		return "", err
@@ -60,7 +61,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
-func createToken(userID string, role Role, key []byte) (string, error) {
+func createToken(userID string, role users.Role, key []byte) (string, error) {
 	jsonToken := paseto.JSONToken{
 		Audience: "jotfly-user",
 		Issuer: "jotfly-server",
@@ -74,7 +75,7 @@ func createToken(userID string, role Role, key []byte) (string, error) {
 	return paseto.NewV2().Encrypt(key, jsonToken, nil)
 }
 
-func checkGetToken(token string, key []byte) (userID string, role Role, err error) {
+func checkGetToken(token string, key []byte) (userID string, role users.Role, err error) {
 	jsonToken := &paseto.JSONToken{}
 	err = paseto.NewV2().Decrypt(token, key, jsonToken, nil)
 	if err != nil {
@@ -85,7 +86,7 @@ func checkGetToken(token string, key []byte) (userID string, role Role, err erro
 		return
 	}
 	userID = jsonToken.Subject
-	role = Role(Role_value[(jsonToken.Get("role"))])
+	role = users.Role(users.Role_value[(jsonToken.Get("role"))])
 	return
 }
 

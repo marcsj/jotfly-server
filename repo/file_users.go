@@ -1,6 +1,7 @@
-package users
+package repo
 
 import (
+	"github.com/marcsj/jotfly-server/users"
 	"os"
 	"path/filepath"
 	"sync"
@@ -8,8 +9,8 @@ import (
 
 type Repo interface {
 	CreateUser(userID string, password []byte) error
-	GetUser(userID string) (*UserInfo, error)
-	UpdateUser(userID string, user *UserInfo) (*UserInfo, error)
+	GetUser(userID string) (*users.UserInfo, error)
+	UpdateUser(userID string, user *users.UserInfo) (*users.UserInfo, error)
 	DeleteUser(userID string) error
 }
 
@@ -34,7 +35,7 @@ func (r fileRepo) CreateUser(userID string, password []byte) error {
 	return nil
 }
 
-func (r fileRepo) GetUser(userID string) (*UserInfo, error) {
+func (r fileRepo) GetUser(userID string) (*users.UserInfo, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.Open(filepath.Join(r.path, userID))
@@ -42,10 +43,10 @@ func (r fileRepo) GetUser(userID string) (*UserInfo, error) {
 		return nil, err
 	}
 	defer file.Close()
-	return convertFileToUser(file)
+	return users.convertFileToUser(file)
 }
 
-func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
+func (r fileRepo) UpdateUser(userID string, user *users.UserInfo) (*users.UserInfo, error) {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	file, err := os.OpenFile(
@@ -58,7 +59,7 @@ func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 	}
 	defer file.Close()
 
-	noteContents, err := convertUserToFileContent(user)
+	noteContents, err := users.convertUserToFileContent(user)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +73,7 @@ func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 		return nil, err
 	}
 	defer file.Close()
-	return convertFileToUser(file)
+	return users.convertFileToUser(file)
 }
 
 func (r fileRepo) DeleteUser(userID string) error {
