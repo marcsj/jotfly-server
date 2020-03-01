@@ -218,24 +218,13 @@
         }
       }
     },
-    "notesDirectoryNote": {
-      "type": "object",
-      "properties": {
-        "directory": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        }
-      }
-    },
     "notesGetDirectoryNotesResponse": {
       "type": "object",
       "properties": {
         "notes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/notesDirectoryNote"
+            "type": "string"
           }
         }
       }

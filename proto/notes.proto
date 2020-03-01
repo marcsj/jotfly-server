@@ -17,11 +17,6 @@ message FileNote {
     string content = 2;
 }
 
-message DirectoryNote {
-    string directory = 1;
-    string id = 2;
-}
-
 message DeleteRequest {
     string directory = 1;
     string id = 2;
@@ -49,7 +44,7 @@ message GetDirectoryNotesRequest {
 }
 
 message GetDirectoryNotesResponse {
-    repeated DirectoryNote notes = 1;
+    repeated string notes = 1;
 }
 
 // Notes service handles the CRUD operations associated with notes

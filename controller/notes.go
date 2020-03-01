@@ -9,7 +9,7 @@ type NotesController interface {
 	GetDirectoryNotes(userID string, directory string) ([]string, error)
 	GetNote(userID string, directory string, note string) (*notes.Note, error)
 	CreateNote(userID string, directory string, note string) error
-	UpdateNote(userID string, note *notes.Note) (*notes.Note, error)
+	UpdateNote(userID string, update *notes.UpdateRequest) (*notes.Note, error)
 	DeleteNote(userID string, directory string, note string) error
 }
 
@@ -46,8 +46,16 @@ func (c notesController) CreateNote(userID string, directory string, note string
 	return c.notesRepo.CreateNote(userID, directory, note)
 }
 
-func (c notesController) UpdateNote(userID string, note *notes.Note) (*notes.Note, error) {
-	return c.notesRepo.UpdateNote(userID, note)
+func (c notesController) UpdateNote(userID string, update *notes.UpdateRequest) (*notes.Note, error) {
+	updatingNote, err := c.GetNote(userID, update.GetDirectory(), update.GetId())
+	if err != nil {
+		return nil, err
+	}
+	if update.GetLabels() != nil {
+		updatingNote.Labels = update.GetLabels()
+	}
+	updatingNote.Content = update.GetContent()
+	return c.notesRepo.UpdateNote(userID, updatingNote)
 }
 
 func (c notesController) DeleteNote(userID string, directory string, note string) error {
