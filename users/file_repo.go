@@ -3,6 +3,7 @@ package users
 import (
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 type Repo interface {
@@ -14,6 +15,7 @@ type Repo interface {
 
 type fileRepo struct {
 	path string
+	mx sync.Mutex
 }
 
 func NewFileRepo(path string) *fileRepo {
@@ -23,6 +25,8 @@ func NewFileRepo(path string) *fileRepo {
 }
 
 func (r fileRepo) CreateUser(userID string, password []byte) error {
+	r.mx.Lock()
+	defer r.mx.Unlock()
 	_, err := os.Create(filepath.Join(r.path, userID))
 	if err != nil {
 		return err
@@ -31,6 +35,8 @@ func (r fileRepo) CreateUser(userID string, password []byte) error {
 }
 
 func (r fileRepo) GetUser(userID string) (*UserInfo, error) {
+	r.mx.Lock()
+	defer r.mx.Unlock()
 	file, err := os.Open(filepath.Join(r.path, userID))
 	if err != nil {
 		return nil, err
@@ -40,6 +46,8 @@ func (r fileRepo) GetUser(userID string) (*UserInfo, error) {
 }
 
 func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
+	r.mx.Lock()
+	defer r.mx.Unlock()
 	file, err := os.OpenFile(
 		filepath.Join(r.path, userID),
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
@@ -62,5 +70,7 @@ func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 }
 
 func (r fileRepo) DeleteUser(userID string) error {
+	r.mx.Lock()
+	defer r.mx.Unlock()
 	return os.Remove(filepath.Join(r.path, userID))
 }
