@@ -5,24 +5,24 @@ import (
 	"path/filepath"
 )
 
-type UserRepo interface {
+type Repo interface {
 	CreateUser(userID string, password []byte) error
 	GetUser(userID string) (*UserInfo, error)
 	UpdateUser(userID string, user *UserInfo) (*UserInfo, error)
 	DeleteUser(userID string) error
 }
 
-type userRepo struct {
+type fileRepo struct {
 	path string
 }
 
-func NewFileRepo(path string) *userRepo {
-	return &userRepo{
+func NewFileRepo(path string) *fileRepo {
+	return &fileRepo{
 		path: path,
 	}
 }
 
-func (r userRepo) CreateUser(userID string, password []byte) error {
+func (r fileRepo) CreateUser(userID string, password []byte) error {
 	_, err := os.Create(filepath.Join(r.path, userID))
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func (r userRepo) CreateUser(userID string, password []byte) error {
 	return nil
 }
 
-func (r userRepo) GetUser(userID string) (*UserInfo, error) {
+func (r fileRepo) GetUser(userID string) (*UserInfo, error) {
 	file, err := os.Open(filepath.Join(r.path, userID))
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (r userRepo) GetUser(userID string) (*UserInfo, error) {
 	return convertFileToUser(file)
 }
 
-func (r userRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
+func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 	file, err := os.OpenFile(
 		filepath.Join(r.path, userID),
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
@@ -61,6 +61,6 @@ func (r userRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 	return r.GetUser(userID)
 }
 
-func (r userRepo) DeleteUser(userID string) error {
+func (r fileRepo) DeleteUser(userID string) error {
 	return os.Remove(filepath.Join(r.path, userID))
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type NoteRepo interface {
+type Repo interface {
 	CreateNote(userID string, directory string, id string) error
 	GetNote(userID string, directory string, id string) (*Note, error)
 	UpdateNote(userID string, note *Note) (*Note, error)
