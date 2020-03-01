@@ -50,7 +50,7 @@ func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 	defer r.mx.Unlock()
 	file, err := os.OpenFile(
 		filepath.Join(r.path, userID),
-		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
+		os.O_RDWR|os.O_TRUNC|os.O_CREATE,
 		0666,
 	)
 	if err != nil {
@@ -66,7 +66,13 @@ func (r fileRepo) UpdateUser(userID string, user *UserInfo) (*UserInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return r.GetUser(userID)
+
+	file, err = os.Open(filepath.Join(r.path, userID))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return convertFileToUser(file)
 }
 
 func (r fileRepo) DeleteUser(userID string) error {

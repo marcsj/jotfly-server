@@ -57,7 +57,7 @@ func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
 	file, err := os.OpenFile(
 		filepath.Join(r.path, userID, note.GetDirectory(), note.GetId()),
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
-		0666,
+		0766,
 		)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,13 @@ func (r fileRepo) UpdateNote(userID string, note *Note) (*Note, error) {
 	if err != nil {
 		return nil, err
 	}
-	return r.GetNote(userID, note.GetDirectory(), note.GetId())
+
+	file, err = os.Open(filepath.Join(r.path, userID, note.GetDirectory(), note.GetId()))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return convertFileToNote(userID, note.GetDirectory(), note.GetId(), file)
 }
 
 func (r fileRepo) DeleteNote(userID string, directory string, id string) error {
