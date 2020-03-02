@@ -1,4 +1,3 @@
-# use our recommended go version
 ARG GO_VERSION=1.13.8
 
 # build the executable
@@ -6,7 +5,6 @@ FROM golang:${GO_VERSION}-alpine as builder
 
 RUN apk add --no-cache ca-certificates git
 
-# set the working directory
 WORKDIR $GOPATH/src/github.com/marcsj/jotfly-server
 
 # go modules
