@@ -1,9 +1,10 @@
 # jotfly-server
 Run anywhere server for Jotfly notes.
 
-Jotfly-server is intended to be a notes server that can be run anywhere for storing and retrieving notes and lists.
-Currently notes saving is entirely done in JSON text on individual files saved in user-created directories.
+Jotfly-server can be self-hosted or run anywhere as a container for storing and retrieving notes and lists.
+Currently notes saving is entirely in JSON on individual files saved in user-created directories.
 
+This server is setup with clear text files, for simplicity, portability, and migration of notes.
 ### Building
 
 Go:  
