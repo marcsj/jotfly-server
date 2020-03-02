@@ -62,7 +62,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grpcServer := grpc.NewServer()
+	authMiddleware := server.NewAuthMiddleware(newKey, usersRepo)
+
+	grpcServer := grpc.NewServer(
+		authMiddleware.UnaryAuthOption(),
+		)
 	usersServer := server.NewUsersServer(usersController)
 	notesServer := server.NewNotesServer(notesController)
 	users.RegisterUsersServer(grpcServer, usersServer)
