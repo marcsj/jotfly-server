@@ -31,7 +31,7 @@ func (m authMiddleware) serverAuthInterceptor(ctx context.Context,
 
 	// ignore on login
 	if info.FullMethod == "/users.Users/Login" {
-		return handler(ctx, req), nil
+		return handler(ctx, req)
 	}
 
 	ctx, err = m.authCheck(ctx)
